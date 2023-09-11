@@ -1,0 +1,1 @@
+CREATE TABLE TRIP ( id int NOT NULL AUTO_INCREMENT, name varchar(255) NOT NULL, creator varchar(255) NOT NULL, status varchar(255) DEFAULT 'ACTIVE', PRIMARY KEY (id) );

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      const test = async () => {
+        let result = await fetch("http://localhost:4000/trip/test-db");
+        alert(result.json());
+      };
+
+      const validateAndSubmitForm = async () => {
+        let tripname = document.forms["myForm"]["tripname"].value;
+        let creator = document.forms["myForm"]["creator"].value;
+        // alert(creator +  ": " + tripname);
+        const payload = {
+          tripname: tripname,
+          creator: creator,
+        };
+
+        const url = "http://localhost:4000/trip/create";
+        const options = {
+          method: "POST", // *GET, POST, PUT, DELETE, etc.
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload), // body data type must match "Content-Type" header
+        };
+        let result = await fetch(url, options);
+        alert(result.json());
+      };
+    </script>
+  </head>
+  <body>
+    <h1>My First JavaScript</h1>
+
+    <button type="button" onclick="test()">
+      Click me to display Date and Time.
+    </button>
+
+    <p id="demo"></p>
+
+    <form name="myForm" onsubmit="return validateAndSubmitForm()" method="post">
+      Name: <input type="text" name="tripname" /> Creator:
+      <input type="text" name="creator" />
+      <input type="submit" value="Submit" />
+    </form>
+  </body>
+</html>
