@@ -29,12 +29,15 @@ router.get("/test-db", (req, resp, next) => {
 
 router.post("/create", function (req, res, next) {
   const inputTrip = req.body;
-  const name = inputTrip.name;
+  //inputTrip.id = Math.floor((Math.random() * 1000) + 1);
+  const tripId = Math.floor((Math.random() * 1000) + 1);
+  const tripname = inputTrip.tripname;
   const creator = inputTrip.creator;
   const status = "ACTIVE";
-  const id = Math.random();
-  console.log(inputTrip);
+  
+  //console.log(inputTrip);
   // save in DB
+  connection.query("INSERT INTO `testDatabase` (`id`, `name`, `creator`, `status`) VALUES ('"+tripId+"','"+tripname+"', '"+creator+"', '"+status+"');")
   res.send("Trip created");
 });
 
@@ -45,6 +48,7 @@ router.post("/invite", function (req, res, next) {
   const id = Math.random();
   console.log(input);
   // save invitation in DB
+  
   res.send("invitation created");
 });
 
