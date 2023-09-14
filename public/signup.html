@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/signup.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">	
+    
+    <script src="https://kit.fontawesome.com/0a69406965.js" crossorigin="anonymous"></script>
+    <title>Sign Up</title>
+
+    <script>
+        
+    </script>
+</head>
+<body>
+    <!--form-->
+<div class="demo">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top bg-transparent">
+        <div class="container">
+          <div class="logo-img"><a class="navbar-brand fw-bold" href="#">ExpenseSplit</a></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='index.html'">Home</button>
+              </li>
+              <li class="nav-item">
+                <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='login.html'">Log In</button>
+              </li>
+              <!--<li class="nav-item">
+                <a class="nav-link" href="#">SERVICES</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">CONTACT</a>
+              </li>-->
+            </ul>
+          </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2 style="text-align: center;">Sign Up</h2>
+
+            <form name="signupForm" method="post">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter Full Name" onkeyup="validateName()">  
+                    <span id="name-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number">Phone Number</label>
+                    <input type="number" class="form-control" id="phone_number" name="phone_number" placeholder="Enter Phone Number" onkeyup="validatePhonenumber()">   
+                    <span id="phone-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="email_id">Email Id</label>
+                    <input type="email" class="form-control" id="email_id" name="email_id" placeholder="Enter Email Id" onkeyup="validateEmail()">   
+                    <span id="email-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="user_password">Password</label>
+                    <input type="password" class="form-control" id="user_password" name="user_password" placeholder="Enter Password" onkeyup="validatePassword()">   
+                    <span id="password-error"></span>
+                </div>
+
+                <!-- <div class="text-center">
+                    <button type="submit" onclick="saveData()" class="btn btn-primary" id="save_btn"></button>
+                    <span id="submit-error"></span>
+                    <input type="reset"  class="btn btn-warning" id="reset_btn"></input>
+                </div> -->
+
+                <div class="text-center">
+                    <input type="button" onclick="saveData() " class="btn btn-primary" id="save_btn" value="Submit"></input>
+                    <span id="submit-error"></span>
+                    <button type="reset"  class="btn btn-warning" id="reset_btn">Reset</button>
+                </div>
+                <br>
+                <p style="text-align: center;">Already have an account?<a href="login.html">Login</a></p>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+    //validation of name
+    var nameError = document.getElementById('name-error');
+    function validateName(){
+        var name = document.getElementById('full_name').value;
+        
+        if(name.length == 0){
+            nameError.innerHTML = 'Name is required';
+            return false;
+        }
+        if(!name.match(/^[A-Za-z\s]*$/)){
+            nameError.innerHTML = 'Enter Letters Only';
+            return false;
+        }
+        nameError.innerHTML = '';
+        return true;
+    }
+
+    //validation of mobile number
+    var mobError = document.getElementById('phone-error');
+    function validatePhonenumber(){
+        var mobileno =  document.getElementById('phone_number').value;
+        
+        if(mobileno.length == 0)
+        {
+            mobError.innerHTML = 'Phone Number is Required' ;
+            return false;
+        }
+        
+        if(!mobileno.match(/^[0-9]{10}$/))
+        {
+            mobError.innerHTML = 'Enter in Correct Format' ;
+            return false;
+        }
+        
+        mobError.innerHTML = '';
+        return true;
+    }
+
+    var emailError = document.getElementById('email-error');
+    function validateEmail(){
+        var emailid =  document.getElementById('email_id').value;
+        
+        if(emailid.length == 0)
+        {
+            emailError.innerHTML = 'Email Id is Required' ;
+            return false;
+        }
+        
+        if(!emailid.match(/^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/))
+        {
+            emailError.innerHTML = 'Enter in Correct Format' ;
+            return false;
+        }
+        
+        emailError.innerHTML = '';
+        return true;
+    }
+
+    var passwordError = document.getElementById('password-error');
+    function validatePassword(){
+        var userpassword =  document.getElementById('user_password').value;
+        
+        if(userpassword.length == 0)
+        {
+            passwordError.innerHTML = 'Password is Required' ;
+            return false;
+        }
+        //^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$
+        if(!userpassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/))
+        {
+            passwordError.innerHTML = 'Must contain min 8 characters, 1 digit,1 special character, 1 uppercase and 1 lowercase alphabet' ;
+            return false;
+        }
+        
+        passwordError.innerHTML = '';
+        return true;
+    }
+
+    var submitError = document.getElementById('submit-error');
+    
+    function saveData(){
+        
+        if(!validateName()||!validatePhonenumber()||!validateEmail()||!validatePassword()){
+        submitError.style.display = "block";
+        submitError.innerHTML = "Please Fix the Error";
+        setTimeout(function(){submitError.style.display = 'none';},3000);
+        return false;
+        }
+        
+        sigunpSubmitForm();
+
+        // let name, phone, email, password;
+        // name = document.getElementById("full_name").value;
+        // phone = document.getElementById("phone_number").value;
+        // email = document.getElementById("email_id").value;
+        // password = document.getElementById("user_password").value;
+        
+        // // localStorage.setItem("name",name);
+        // // localStorage.setItem("phone",phone);
+        // // localStorage.setItem("email",email);
+        // // localStorage.setItem("password",password);
+
+        // let user_record = new Array();
+        // user_record = JSON.parse(localStorage.getItem("users"))?JSON.parse(localStorage.getItem("users")):[]
+        // if(user_record.some((v)=>{
+        //     return v.email == email
+        // })){
+        //     alert("duplicate data")
+        // }
+        // else{
+        //     user_record.push({
+        //         "name":name,
+        //         "phone": phone,
+        //         "email":email,
+        //         "password":password
+        //     })   
+        //     localStorage.setItem("users",JSON.stringify(user_record));
+        //     window.location.href="login.html";
+        // }
+
+       
+    }
+
+    const sigunpSubmitForm = async () => {
+        let fullname = document.forms["signupForm"]["full_name"].value;
+        let phonenumber = document.forms["signupForm"]["phone_number"].value;
+        let emailid = document.forms["signupForm"]["email_id"].value;
+        let userpassword = document.forms["signupForm"]["user_password"].value;
+        // alert(creator +  ": " + tripname);
+        const payload = {
+          fullname: fullname,
+          phonenumber: phonenumber,
+          emailid: emailid,
+          userpassword: userpassword
+        };
+
+        const url = "http://localhost:4000/trip/signup";
+        const options = {
+          method: "POST", // *GET, POST, PUT, DELETE, etc.
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload), // body data type must match "Content-Type" header
+        };
+        
+        let result = await fetch(url, options);
+        
+        console.log(result);
+
+        if(result.status==200){
+          window.location.href = "login.html";
+        }
+        else{
+          alert("User already Exists")
+        }
+        
+      };
+</script>
+</html>

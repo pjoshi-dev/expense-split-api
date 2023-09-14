@@ -1,0 +1,89 @@
+html, body {
+    margin:0px;
+    height:100%;
+  }
+
+.navbar{
+    background-color: grey;
+}
+
+.navbar-light .navbar-nav .btn{
+    color: white;
+    font-size: 22px;
+	margin:2px;
+}
+.navbar-light .navbar-brand{
+    padding-top: 10px;
+    color: white;
+    font-size: 30px;
+}
+
+/* .sidenav {
+    height: 100%;
+    margin-top: 3%;
+    width: 160px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+} */
+
+
+.demo{
+    width: 100%;
+    font-size: 16px;
+    height: 100%;
+    padding: 50px;  
+    padding-top: 70px;
+    background-size: 100% 100%;
+    height:100%;
+}
+
+.container 
+{
+    width: 60%;
+    height: 100%;
+    background-color: aliceblue;
+    margin: auto;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+.container  .welcome_user{
+    width: 45vw;
+    height: fit-content;
+    float: left;
+}
+
+.container  .add_trip_button{
+    height: fit-content;
+}
+
+.form-control{
+    border-radius:1rem;
+}
+
+.trip_data table td{
+    border: 1px solid black;
+}
+
+/*media Query*/
+@media only screen and (max-width:600px){
+    header{
+        background-position: 20% 33%;
+    }
+}
