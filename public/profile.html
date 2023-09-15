@@ -84,71 +84,25 @@
             </div>
             
             <br><br>
-
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-              <button type="button" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#friendsModal"style="font-size: 20px;">Add Friends</button>
-              <button type="button" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#expenseModal"style="font-size: 20px;">Add Expense</button>
-            </div>
-            
-            <div class="modal fade" id="friendsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Add Friends</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form>
-                      <div class="mb-3">
-                        <label for="email_id" class="col-form-label">Email Id</label>
-                        <input type="text" class="form-control" id="email_id">
-                      </div>
-                    </form>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Add</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="modal fade" id="expenseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Add Expense</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form>
-                      <div class="mb-3">
-                        <label for="paidBy" class="col-form-label">Paid By</label>
-                        <input type="text" class="form-control" id="paid_by">
-                      </div>
-                      <div class="mb-3">
-                        <label for="expenseDescription" class="col-form-label">Expense Description</label>
-                        <textarea class="form-control" id="expenseDescription"></textarea>
-                      </div>
-                      <div class="mb-3">
-                        <label for="expenseAmt" class="col-form-label">Expense Amount</label>
-                        <input type="number" class="form-control" id="expenseAmt">
-                      </div>
-                    </form>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="reset" class="btn btn-secondary" id="resetBtn">Reset</button>
-                    <button type="button" class="btn btn-primary" id="addExpense">Add</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <br><br>
-            
             
             <div class="trip_data">
               <table id="displaytable_active"  width="100%" cellpadding="1" cellspacing="0" border="1">
+                <thead>
+                  <tr align="center">
+                    <td class="lbl">Trip Name</td>
+                    <td class="lbl">Created By</td>
+                    <td class="lbl">Status</td>
+                    <td class="lbl">Action</td>
+                  </tr>
+                </thead>
+                <tbody id="displaytable2">
+
+                </tbody>
+              </table>
+            </div>
+
+            <!-- <div class="trip_data">
+              <table id="displaytable_settled"  width="100%" cellpadding="1" cellspacing="0" border="1">
                 <thead>
                   <tr align="center">
                     <td class="lbl">Trip Name</td>
@@ -160,7 +114,8 @@
 
                 </tbody>
               </table>
-            </div>
+            </div> -->
+           
 
     </div>
 </div>
@@ -221,7 +176,19 @@
     }
 
     function viewTripDetails(trip_id, name, creator) {
-      alert(name);
+      showTripDetails();
+    }
+    
+    const showTripDetails = async ()=>{
+      const url = 'http://localhost:4000/trip/details/:trip_id';
+      const options = {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({tripid: trip_id})
+      }
+      let result = await fetch(url, options);
     }
 
     const showActiveTripsDetails = async () => {
@@ -245,20 +212,52 @@
           var cell1 = row.insertCell(0);
           var cell2 = row.insertCell(1);
           var cell3 = row.insertCell(2);
-
+          var cell4 = row.insertCell(3);
+          
+          //viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator})')'
           cell1.innerHTML = trip.name;
           cell2.innerHTML = trip.creator;
-          cell3.innerHTML = `<button onClick="viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
+          cell3.innerHTML = trip.status;
+          cell4.innerHTML = `<button onClick="window.location.href = 'Details.html',viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
 
         })
       }
     }
 
     function showSettledTrips(){
-      if (document.getElementById("displaytable_active").style.display === "none")
-        document.getElementById("displaytable_active").style.display="block";
-      else
-        document.getElementById("displaytable_active").style.display="none";
+      showSettledTripsDetails();
+    }
+
+    const showSettledTripsDetails = async () => {
+      const url = 'http://localhost:4000/trip/settled';
+      const options = {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({email: localStorage.getItem('emailid')})
+      }
+      let result = await fetch(url,options).then(response => {
+        return response.json()
+      });
+      console.log(result);
+      if(result.length > 0) {
+        var table = document.getElementById("displaytable_active");
+
+        result.forEach((trip, index) => {
+          var row = table.insertRow(index + 1);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3 = row.insertCell(2);
+          var cell4 = row.insertCell(3);
+
+          cell1.innerHTML = trip.name;
+          cell2.innerHTML = trip.creator;
+          cell3.innerHTML = trip.status;
+          cell4.innerHTML = `<button onClick="viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
+
+        })
+      }
     }
 
 

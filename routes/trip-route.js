@@ -101,6 +101,7 @@ router.post("/create", function (req, res, next) {
       // return;
     } else {
       console.log(result);
+      res.status(200);
     }
   });
   res.json({ success: true, message: "Trip created" });
@@ -193,23 +194,49 @@ router.post("/active", async (req, res, next) => {
   });
 });
 
-router.get("/settled", (req, res, next) => {
-  // const input = req.body;
-  // const email = input.email;
+router.post("/settled", async (req, res, next) => {
+  const input = req.body;
+  const email = input.email;
+
   // from DB find this
-  var query =
-    " SELECT trip.*, user_trip_mapping.* FROM trip INNER JOIN user_trip_mapping ON trip.creator = user_trip_mapping.email_id WHERE trip.status = 'settled' AND user_trip_mapping.email_id = 'john@gmail.com';";
-  connection.query(query, (error, data) => {
+  // -- creator = me, status = active;
+  const queryMine = `select * from trip where status = 'SETTLED' and creator = '${email}'`;
+  const queryOther = `select * from user_trip_mapping where email_id = '${email}'`;
+  // -- utm = uer id = me ;
+  // -- get all trips from above and active = true
+  // -- creator + utm
+  // var query = `SELECT * FROM trip WHERE status = 'ACTIVE' AND creator = 'sarthak@gmail.com' AND EXISTS ( SELECT 1 FROM user_trip_mapping WHERE email_id = 'sarthak@gmail.com' AND status = 'ACTIVE');`;
+  const finalSettledMyTrips = [];
+  await connection.query(queryMine, async (error, data) => {
     if (error) {
       console.log(error);
+      res.sendStatus(500);
     } else {
-      console.log(data);
+      data.forEach((d) => finalSettledMyTrips.push(d));
+      console.log("------------- my trip details");
+      console.log(finalSettledMyTrips);
+      await connection.query(queryOther, async (error, data1) => {
+        if (error) {
+          // console.log(error);
+          res.sendStatus(500);
+        } else {
+          const otherTrips = data1.map((utm) => utm.trip_id);
+          // res.send(data1);
+          const otherTripsQuery = `select * from trip where status = 'SETTLED' and trip_id  in (${otherTrips.toString()})`;
+          await connection.query(otherTripsQuery, (error, result) => {
+            console.log("------------- other my trip details");
+            result.forEach((d) => finalSettledMyTrips.push(d));
+            console.log(finalSettledMyTrips);
+            res.send(finalSettledMyTrips);
+          });
+        }
+      });
     }
   });
 });
 
-router.get("/details/:trip_id", (req, res, next) => {
-  //const tripId = req.params.tripId;
+router.post("/details/:trip_id", (req, res, next) => {
+  const tripId = req.params.tripId;
   // from DB find this
   connection.query(
     "SELECT * FROM expense WHERE trip_id=?",
@@ -227,6 +254,7 @@ router.get("/details/:trip_id", (req, res, next) => {
   //console.log(input);
   // save in DB
   //res.json({ trip: {} });
+  res.json({ success: true, message: "Trip details" });
 });
 
 module.exports = router;
