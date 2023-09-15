@@ -113,7 +113,7 @@ router.post("/invite", function (req, res, next) {
   const friendEmail = input.friendEmail;
 
   // save invitation in DB
-  const query = `INSERT INTO user_trip_mapping ( trip_id, email_id) VALUES ('${tripId}', '${friendEmail}');`;
+  const query = `INSERT INTO user_trip_mapping ( trip_id, email_id) VALUES (${tripId}, '${friendEmail}')`;
 
   connection.query(query, (error, result) => {
     if (error) {
@@ -171,7 +171,9 @@ router.post("/active", async (req, res, next) => {
       console.log(error);
       res.sendStatus(500);
     } else {
-      data.forEach((d) => finalMyTrips.push(d));
+      if (data && data.length > 0) {
+        data.forEach((d) => finalMyTrips.push(d));
+      }
       console.log("------------- my trip details");
       console.log(finalMyTrips);
       await connection.query(queryOther, async (error, data1) => {
@@ -184,7 +186,9 @@ router.post("/active", async (req, res, next) => {
           const otherTripsQuery = `select * from trip where status = 'ACTIVE' and trip_id  in (${otherTrips.toString()})`;
           await connection.query(otherTripsQuery, (error, result) => {
             console.log("------------- other my trip details");
-            result.forEach((d) => finalMyTrips.push(d));
+            if (result && result.length > 0) {
+              result.forEach((d) => finalMyTrips.push(d));
+            }
             console.log(finalMyTrips);
             res.send(finalMyTrips);
           });
@@ -244,9 +248,10 @@ router.post("/details/:trip_id", (req, res, next) => {
     (error, data) => {
       if (error) {
         console.log(error);
+        res.sendStatus(500);
       } else {
         console.log(data);
-        //res.send(data);
+        res.send(data);
       }
     }
   );
@@ -254,7 +259,7 @@ router.post("/details/:trip_id", (req, res, next) => {
   //console.log(input);
   // save in DB
   //res.json({ trip: {} });
-  res.json({ success: true, message: "Trip details" });
+  // res.json({ success: true, message: "Trip details" });
 });
 
 module.exports = router;

@@ -176,10 +176,10 @@
     }
 
     function viewTripDetails(trip_id, name, creator) {
-      showTripDetails();
+      showTripDetails(trip_id, name, creator);
     }
     
-    const showTripDetails = async ()=>{
+    const showTripDetails = async (trip_id, name, creator)=>{
       const url = 'http://localhost:4000/trip/details/:trip_id';
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -189,6 +189,8 @@
         body: JSON.stringify({tripid: trip_id})
       }
       let result = await fetch(url, options);
+      localStorage.setItem("selectedTrip", JSON.stringify({trip_id, name, creator}))
+      window.location.href = 'details.html';
     }
 
     const showActiveTripsDetails = async () => {
@@ -218,7 +220,7 @@
           cell1.innerHTML = trip.name;
           cell2.innerHTML = trip.creator;
           cell3.innerHTML = trip.status;
-          cell4.innerHTML = `<button onClick="window.location.href = 'Details.html',viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
+          cell4.innerHTML = `<button onClick="viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
 
         })
       }
