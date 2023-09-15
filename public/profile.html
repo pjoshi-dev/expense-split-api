@@ -151,6 +151,7 @@
           body: JSON.stringify(payload), // body data type must match "Content-Type" header
         };
         let result = await fetch(url, options);
+        alert("Trip Created Successfully!");
     }
 
     // function addTrip(){
@@ -220,7 +221,7 @@
           cell1.innerHTML = trip.name;
           cell2.innerHTML = trip.creator;
           cell3.innerHTML = trip.status;
-          cell4.innerHTML = `<button onClick="viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
+          cell4.innerHTML = `<button class="btn btn-outline-secondary" onClick="viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
 
         })
       }

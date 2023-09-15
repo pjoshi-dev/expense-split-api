@@ -240,26 +240,25 @@ router.post("/settled", async (req, res, next) => {
 });
 
 router.post("/details/:trip_id", (req, res, next) => {
-  const tripId = req.params.tripId;
+  const tripId = req.params.trip_id;
   // from DB find this
-  connection.query(
-    "SELECT * FROM expense WHERE trip_id=?",
-    [req.params.trip_id],
-    (error, data) => {
+  const tripexpenses=[];
+  connection.query("SELECT * FROM expense WHERE trip_id=?",[tripId],(error, data) => {
       if (error) {
         console.log(error);
         res.sendStatus(500);
       } else {
-        console.log(data);
-        res.send(data);
+        data.forEach((d) => tripexpenses.push(d));
+        console.log(tripexpenses);
+        res.send(tripexpenses);
       }
-    }
-  );
-  // status = active, creator = email and invitaion contains email
+    });
+ 
+});
+
+ // status = active, creator = email and invitaion contains email
   //console.log(input);
   // save in DB
   //res.json({ trip: {} });
   // res.json({ success: true, message: "Trip details" });
-});
-
 module.exports = router;

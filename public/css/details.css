@@ -38,3 +38,7 @@ html, body {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.trip_expense table td{
+    border: 1px solid black;
+}

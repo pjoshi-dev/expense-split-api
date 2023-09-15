@@ -38,8 +38,50 @@
           document.getElementById("trip_id").innerHTML = selectedTrip.trip_id;
           document.getElementById("name").innerHTML = selectedTrip.name;
           document.getElementById("creator").innerHTML = selectedTrip.creator;
+          showTripExpenses(selectedTrip);
         }
       }
+
+      const showTripExpenses = async (selectedTrip) => {
+      let tripId = selectedTrip.trip_id;
+
+      const payload = {
+        tripId: tripId
+      };
+
+      const url = "http://localhost:4000/trip/details/:trip_id";
+      const options = {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload), // body data type must match "Content-Type" header
+        }
+
+        let result = await fetch(url, options).then(response => {
+          return response.json()
+        });
+
+        console.log(result);
+        
+        if(result.length > 0) {
+        var table = document.getElementById("display_trip_expense");
+
+        result.forEach((selectedTrip, index) => {
+          var row = table.insertRow(index + 1);
+          var cell1 = row.insertCell(0);
+          var cell2 = row.insertCell(1);
+          var cell3 = row.insertCell(2);
+          
+          //viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator})')'
+          cell1.innerHTML = selectedTrip.expenseDescription;
+          cell2.innerHTML = selectedTrip.expenseAmount;
+          cell3.innerHTML = selectedTrip.paid_by;
+          
+        })
+        }
+      };
+
     </script>
   </head>
   <body onload="showTripDetails()">
@@ -85,8 +127,7 @@
             class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#friendsModal"
-            style="font-size: 20px"
-          >
+            style="font-size: 20px">
             Add Friends
           </button>
           <button
@@ -94,8 +135,7 @@
             class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#expenseModal"
-            style="font-size: 20px"
-          >
+            style="font-size: 20px">
             Add Expense
           </button>
         </div>
@@ -247,6 +287,30 @@
             </div>
           </div>
         </div>
+
+        <br>
+
+        <div class="trip_expense">
+          <table id="display_trip_expense"  width="100%" cellpadding="1" cellspacing="0" border="1">
+            <thead>
+              <tr align="center">
+                <td class="lbl">Expense Description</td>
+                <td class="lbl">Expense Amount</td>
+                <td class="lbl">Paid By</td>
+              </tr>
+            </thead>
+            <tbody id="displaytable2">
+
+            </tbody>
+          </table>
+        </div>
+
+        <br>
+
+        <div>
+          <center><button type="button" class="btn btn-outline-primary">Settle Trip</button></center>
+        </div>
+
       </div>
     </div>
   </body>
@@ -282,26 +346,35 @@
         body: JSON.stringify(payload), // body data type must match "Content-Type" header
       };
       let result = await fetch(url, options);
-      alert("Friend Added successfully!");
+      alert("Friend Added Successfully!");
       window.history.back();
     };
 
     function addExpense() {
-      addExpenseForm();
+      let selectedTrip;
+      const selectedTripString = localStorage.getItem("selectedTrip");
+      if (selectedTripString) {
+        selectedTrip = JSON.parse(selectedTripString);
+      }
+      if (selectedTrip) {
+        addExpenseForm(selectedTrip);
+      } else {
+        alert("No trip selected, please try again.");
+      }
     }
 
-    const addExpenseForm = async () => {
-      let paidby = document.forms["expenseForm"]["paid_by"].value;
-      let expensedesc =
-        document.forms["expenseForm"]["expenseDescription"].value;
-      let expenseamt = document.forms["expenseForm"]["expenseAmt"].value;
-      let tripid = trip.trip_id;
+    const addExpenseForm = async (selectedTrip) => {
+      
+      let expenseDescription = document.forms["expenseForm"]["expenseDescription"].value;
+      let expenseAmount = document.forms["expenseForm"]["expenseAmt"].value;
+      let paidBy = document.forms["expenseForm"]["paid_by"].value;
+      let tripId = selectedTrip.trip_id;
 
       const payload = {
-        paidby: paidby,
-        expensedesc: expensedesc,
-        expenseamt: expenseamt,
-        tripid: tripid,
+        expenseDescription: expenseDescription,
+        expenseAmount: expenseAmount,
+        paidBy: paidBy,
+        tripId: tripId
       };
 
       const url = "http://localhost:4000/trip/expense";
@@ -313,6 +386,8 @@
         body: JSON.stringify(payload), // body data type must match "Content-Type" header
       };
       let result = await fetch(url, options);
+      alert("Expense Added Successfully!");
+      window.history.back();
     };
   </script>
 </html>
