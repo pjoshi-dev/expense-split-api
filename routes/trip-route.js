@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 const { connection } = require("../config/db");
 // const connection = mysql.createConnection({
 //   host: "sql12.freesqldatabase.com",
@@ -30,7 +30,6 @@ router.get("/test-db", (req, resp, next) => {
   }
 });
 
-
 router.post("/signup", function (req, res, next) {
   const inputuserData = req.body;
   const fullname = inputuserData.fullname;
@@ -45,11 +44,13 @@ router.post("/signup", function (req, res, next) {
     if (error) {
       console.log(error);
       res.status(500).send(error);
-      res.json('error', { message: "User registration failed. Please try again." });
+      res.json("error", {
+        message: "User registration failed. Please try again.",
+      });
       // return;
     } else {
       console.log(result);
-      //res.json({ success: true, message: "User created" });
+      res.json({ success: true, message: "User created" });
       //res.redirect('login.html');
     }
   });
@@ -66,19 +67,19 @@ router.post("/login", function (req, res, next) {
   connection.query(query, (error, result) => {
     if (error) {
       throw error;
-    } 
-    if(result.length === 0) {
+    }
+    if (result.length === 0) {
       return res.status(401).json({
-        error: 'Email or password is incorrect!'
+        error: "Email or password is incorrect!",
       });
     }
-    const user = result[0]
-    const passwordMatch = bcrypt.compare(userpassword,user.user_password);
+    const user = result[0];
+    const passwordMatch = bcrypt.compare(userpassword, user.user_password);
     if (passwordMatch) {
       // Create a session or JWT token here for authentication
-      res.json({ message: 'Login successful' });
+      res.json({ message: "Login successful" });
     } else {
-      res.status(401).json({ error: 'Authentication failed' });
+      res.status(401).json({ error: "Authentication failed" });
     }
   });
   //res.json({ success: true, message: "User created" });
@@ -105,7 +106,6 @@ router.post("/create", function (req, res, next) {
   res.json({ success: true, message: "Trip created" });
 });
 
-
 router.post("/invite", function (req, res, next) {
   const input = req.body;
   const tripId = input.tripId;
@@ -113,7 +113,7 @@ router.post("/invite", function (req, res, next) {
 
   // save invitation in DB
   const query = `INSERT INTO user_trip_mapping ( trip_id, email_id) VALUES ('${tripId}', '${friendEmail}');`;
-  
+
   connection.query(query, (error, result) => {
     if (error) {
       console.log(error);
@@ -122,7 +122,7 @@ router.post("/invite", function (req, res, next) {
       // return;
     } else {
       console.log(result);
-     // res.redirect('/login.html');
+      // res.redirect('/login.html');
     }
   });
   res.json({ success: true, message: "Friend Added" });
@@ -134,11 +134,10 @@ router.post("/expense", function (req, res, next) {
   const expenseAmount = inputExpense.expenseAmount;
   const paidBy = inputExpense.paidBy;
   const tripId = inputExpense.tripId;
-  
 
   // save invitation in DB
   const query = `INSERT INTO expense ( expense_description, expense_amount, paid_by, trip_id) VALUES ('${expenseDescription}','${expenseAmount}','${paidBy}','${tripId}');`;
-  
+
   connection.query(query, (error, result) => {
     if (error) {
       console.log(error);
@@ -147,57 +146,83 @@ router.post("/expense", function (req, res, next) {
       // return;
     } else {
       console.log(result);
-     // res.redirect('/login.html');
+      // res.redirect('/login.html');
     }
   });
   res.json({ success: true, message: "Expense Added" });
 });
 
-
-router.get("/active", (req, res, next) =>{
-  // const input = req.body;
-  // const email = input.email;
+router.post("/active", async (req, res, next) => {
+  const input = req.body;
+  const email = input.email;
 
   // from DB find this
- 
-  var query = " SELECT * FROM trip WHERE status = 'ACTIVE' AND creator = 'sarthak@gmail.com' AND EXISTS ( SELECT 1 FROM user_trip_mapping WHERE email_id = 'sarthak@gmail.com' AND status = 'ACTIVE');";
+  // -- creator = me, status = active;
+  const queryMine = `select * from trip where status = 'ACTIVE' and creator = '${email}'`;
+  const queryOther = `select * from user_trip_mapping where email_id = '${email}'`;
+  // -- utm = uer id = me ;
+  // -- get all trips from above and active = true
+  // -- creator + utm
+  // var query = `SELECT * FROM trip WHERE status = 'ACTIVE' AND creator = 'sarthak@gmail.com' AND EXISTS ( SELECT 1 FROM user_trip_mapping WHERE email_id = 'sarthak@gmail.com' AND status = 'ACTIVE');`;
+  const finalMyTrips = [];
+  await connection.query(queryMine, async (error, data) => {
+    if (error) {
+      console.log(error);
+      res.sendStatus(500);
+    } else {
+      data.forEach((d) => finalMyTrips.push(d));
+      console.log("------------- my trip details");
+      console.log(finalMyTrips);
+      await connection.query(queryOther, async (error, data1) => {
+        if (error) {
+          // console.log(error);
+          res.sendStatus(500);
+        } else {
+          const otherTrips = data1.map((utm) => utm.trip_id);
+          // res.send(data1);
+          const otherTripsQuery = `select * from trip where status = 'ACTIVE' and trip_id  in (${otherTrips.toString()})`;
+          await connection.query(otherTripsQuery, (error, result) => {
+            console.log("------------- other my trip details");
+            result.forEach((d) => finalMyTrips.push(d));
+            console.log(finalMyTrips);
+            res.send(finalMyTrips);
+          });
+        }
+      });
+    }
+  });
+});
+
+router.get("/settled", (req, res, next) => {
+  // const input = req.body;
+  // const email = input.email;
+  // from DB find this
+  var query =
+    " SELECT trip.*, user_trip_mapping.* FROM trip INNER JOIN user_trip_mapping ON trip.creator = user_trip_mapping.email_id WHERE trip.status = 'settled' AND user_trip_mapping.email_id = 'john@gmail.com';";
   connection.query(query, (error, data) => {
     if (error) {
       console.log(error);
-    }
-    else{
+    } else {
       console.log(data);
-    }   
-    });
+    }
   });
+});
 
-  
-router.get("/settled", (req, res, next) =>{
-  // const input = req.body;
-  // const email = input.email;
-    // from DB find this
-    var query = " SELECT trip.*, user_trip_mapping.* FROM trip INNER JOIN user_trip_mapping ON trip.creator = user_trip_mapping.email_id WHERE trip.status = 'settled' AND user_trip_mapping.email_id = 'john@gmail.com';";
-    connection.query(query, (error, data) => {
-      if (error) {
-        console.log(error);
-      }
-      else{
-        console.log(data);
-      }   
-      });
-    });
-
-router.get("/details/:trip_id", (req, res, next) =>{
+router.get("/details/:trip_id", (req, res, next) => {
   //const tripId = req.params.tripId;
   // from DB find this
-  connection.query('SELECT * FROM expense WHERE trip_id=?',[req.params.trip_id],(error,data)=>{
-    if(error){
-      console.log(error);
-    }else{
-      console.log(data);
-      //res.send(data);
+  connection.query(
+    "SELECT * FROM expense WHERE trip_id=?",
+    [req.params.trip_id],
+    (error, data) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(data);
+        //res.send(data);
+      }
     }
-  })
+  );
   // status = active, creator = email and invitaion contains email
   //console.log(input);
   // save in DB
