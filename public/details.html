@@ -35,7 +35,6 @@
           selectedTrip = JSON.parse(selectedTripString);
         }
         if (selectedTrip) {
-          document.getElementById("trip_id").innerHTML = selectedTrip.trip_id;
           document.getElementById("name").innerHTML = selectedTrip.name;
           document.getElementById("creator").innerHTML = selectedTrip.creator;
           showTripExpenses(selectedTrip);
@@ -58,8 +57,8 @@
         body: JSON.stringify(payload), // body data type must match "Content-Type" header
         }
 
-        let result = await fetch(url, options).then(response => {
-          return response.json()
+        let result = await fetch(url, options).then(res => {
+          return res.json()
         });
 
         console.log(result);
@@ -148,7 +147,6 @@
             margin-top: 10px;
           "
         >
-          <span id="trip_id"></span>
           <span id="name"></span>
           <span id="creator"></span>
         </div>
@@ -308,7 +306,7 @@
         <br>
 
         <div>
-          <center><button type="button" class="btn btn-outline-primary">Settle Trip</button></center>
+          <center><button type="button" class="btn btn-outline-primary" onclick="settleTrip()">Settle Trip</button></center>
         </div>
 
       </div>
@@ -388,6 +386,38 @@
       let result = await fetch(url, options);
       alert("Expense Added Successfully!");
       window.history.back();
+    };
+
+    function settleTrip(){
+      let selectedTrip;
+      const selectedTripString = localStorage.getItem("selectedTrip");
+      if (selectedTripString) {
+        selectedTrip = JSON.parse(selectedTripString);
+      }
+      if (selectedTrip) {
+        tripSettlement(selectedTrip);
+      } else {
+        alert("No trip selected, please try again.");
+      }
+    }
+
+    const tripSettlement = async (selectedTrip)=>{
+      let tripId = selectedTrip.trip_id;
+
+      const payload = {
+        tripId: tripId
+      }
+
+      const url = "http://localhost:4000/trip/settlement/:trip_id";
+      const options = {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload), // body data type must match "Content-Type" header
+      };
+      let result = await fetch(url, options);
+
     };
   </script>
 </html>

@@ -252,8 +252,60 @@ router.post("/details/:trip_id", (req, res, next) => {
         console.log(tripexpenses);
         res.send(tripexpenses);
       }
+    });  
+});
+
+router.post('/settlement/:trip_id', async (req, res) => {
+  const tripId = req.params.trip_id;
+
+  try {
+    // Get all users and their total expenses for the given trip_id
+    const [userRows] = await connection.query('SELECT paid_by, SUM(expense_amount) as totalExpenses FROM expense WHERE trip_id = ? GROUP BY paid_by', [tripId]);
+
+    // Get the total expenses for the trip
+    const [totalExpenseRows] = await connection.query('SELECT SUM(expense_amount) as totalTripExpense FROM expense WHERE trip_id = ?', [tripId]);
+    const totalTripExpense = totalExpenseRows[0].totalTripExpense || 0;
+
+    // Calculate individual shares for each user
+    const shares = [];
+    userRows.forEach((row) => {
+      const paid_by = row.paid_by;
+      const totalExpenses = row.totalExpenses;
+      const share = totalExpenses - totalTripExpense / userRows.length;
+      shares.push({ user_id, share });
     });
- 
+
+    // Calculate who should pay whom to settle the transaction
+    const transactions = [];
+    for (let i = 0; i < shares.length; i++) {
+      for (let j = i + 1; j < shares.length; j++) {
+        const debtor = shares[i].paid_by;
+        const creditor = shares[j].paid_by;
+        const amount = Math.min(Math.abs(shares[i].share), Math.abs(shares[j].share));
+
+        if (amount > 0) {
+          transactions.push({ debtor, creditor, amount });
+          shares[i].share += amount; // Update the debtor's share
+          shares[j].share -= amount; // Update the creditor's share
+        }
+      }
+    }
+
+    // Construct the response JSON
+    const tripInfo = {
+      trip_id: tripId,
+      total_users: userRows.length,
+      total_trip_expense: totalTripExpense,
+      user_expenses: userRows,
+      individual_shares: shares,
+      transactions: transactions,
+    };
+
+    res.json(tripInfo);
+  } catch (error) {
+    console.error('Error fetching trip data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
  // status = active, creator = email and invitaion contains email
