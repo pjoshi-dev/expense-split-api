@@ -181,7 +181,7 @@
     }
     
     const showTripDetails = async (trip_id, name, creator)=>{
-      const url = 'http://localhost:4000/trip/details/:trip_id';
+      const url = `http://localhost:4000/trip/details/${trip_id}`;
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {

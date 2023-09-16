@@ -242,8 +242,11 @@ router.post("/settled", async (req, res, next) => {
 router.post("/details/:trip_id", (req, res, next) => {
   const tripId = req.params.trip_id;
   // from DB find this
-  const tripexpenses=[];
-  connection.query("SELECT * FROM expense WHERE trip_id=?",[tripId],(error, data) => {
+  const tripexpenses = [];
+  connection.query(
+    "SELECT * FROM expense WHERE trip_id=?",
+    [tripId],
+    (error, data) => {
       if (error) {
         console.log(error);
         res.sendStatus(500);
@@ -252,65 +255,103 @@ router.post("/details/:trip_id", (req, res, next) => {
         console.log(tripexpenses);
         res.send(tripexpenses);
       }
-    });  
+    }
+  );
 });
 
-router.post('/settlement/:trip_id', async (req, res) => {
+router.post("/settlement/:trip_id", async (req, res) => {
   const tripId = req.params.trip_id;
 
   try {
-    // Get all users and their total expenses for the given trip_id
-    const [userRows] = await connection.query('SELECT paid_by, SUM(expense_amount) as totalExpenses FROM expense WHERE trip_id = ? GROUP BY paid_by', [tripId]);
+    let totalTripExpense = 0;
+    await connection.query(
+      "SELECT SUM(expense_amount) as totalTripExpense FROM expense WHERE trip_id = ?",
+      [tripId],
+      async (error, expense) => {
+        totalTripExpense = expense[0].totalTripExpense;
+        console.log("totalTripExpense --------- ", totalTripExpense);
 
-    // Get the total expenses for the trip
-    const [totalExpenseRows] = await connection.query('SELECT SUM(expense_amount) as totalTripExpense FROM expense WHERE trip_id = ?', [tripId]);
-    const totalTripExpense = totalExpenseRows[0].totalTripExpense || 0;
+        // Per user
 
-    // Calculate individual shares for each user
-    const shares = [];
-    userRows.forEach((row) => {
-      const paid_by = row.paid_by;
-      const totalExpenses = row.totalExpenses;
-      const share = totalExpenses - totalTripExpense / userRows.length;
-      shares.push({ user_id, share });
-    });
+        // Get all users and their total expenses for the given trip_id
+        const shares = [];
+        let numberOfUsers = 1;
+        await connection.query(
+          "SELECT paid_by, SUM(expense_amount) as totalExpenses FROM expense WHERE trip_id = ? GROUP BY paid_by",
+          [tripId],
+          (error, userRows) => {
+            // Calculate individual shares for each user
+            numberOfUsers = userRows.length;
+            console.log("numberOfUsers --------- ", numberOfUsers);
+
+            // per head
+            const perHead = totalTripExpense / numberOfUsers;
+            console.log("perHead --------- ", perHead);
+
+            userRows.forEach((person) => {
+              const paid_by = person.paid_by;
+              const totalExpenses = person.totalExpenses;
+              const share = totalExpenses - perHead;
+              shares.push({ paid_by, share });
+            });
+            console.log("shares --------- ", shares);
+
+            // Construct the response JSON
+            const tripInfo = {
+              trip_id: tripId,
+              total_users: numberOfUsers,
+              total_trip_expense: totalTripExpense,
+              perHead: perHead,
+              individual_shares: shares,
+              // transactions: transactions,
+            };
+            console.log("tripInfo --------- ", tripInfo);
+
+            const settlement = [];
+            settlement.push({
+              from: "",
+              to: "",
+              amount: 123,
+            });
+            // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
+            // loop Givers[] - loop on Receivers[]
+            // compare giver[0] receiveer[0]
+            // giver amout =
+            // giver[0] > receiveer[0]   >>   give complete amount to receiver[0]
+
+            res.json(tripInfo);
+          }
+        );
+      }
+    );
 
     // Calculate who should pay whom to settle the transaction
-    const transactions = [];
-    for (let i = 0; i < shares.length; i++) {
-      for (let j = i + 1; j < shares.length; j++) {
-        const debtor = shares[i].paid_by;
-        const creditor = shares[j].paid_by;
-        const amount = Math.min(Math.abs(shares[i].share), Math.abs(shares[j].share));
+    // const transactions = [];
+    // for (let i = 0; i < shares.length; i++) {
+    //   for (let j = i + 1; j < shares.length; j++) {
+    //     const debtor = shares[i].paid_by;
+    //     const creditor = shares[j].paid_by;
+    //     const amount = Math.min(
+    //       Math.abs(shares[i].share),
+    //       Math.abs(shares[j].share)
+    //     );
 
-        if (amount > 0) {
-          transactions.push({ debtor, creditor, amount });
-          shares[i].share += amount; // Update the debtor's share
-          shares[j].share -= amount; // Update the creditor's share
-        }
-      }
-    }
-
-    // Construct the response JSON
-    const tripInfo = {
-      trip_id: tripId,
-      total_users: userRows.length,
-      total_trip_expense: totalTripExpense,
-      user_expenses: userRows,
-      individual_shares: shares,
-      transactions: transactions,
-    };
-
-    res.json(tripInfo);
+    //     if (amount > 0) {
+    //       transactions.push({ debtor, creditor, amount });
+    //       shares[i].share += amount; // Update the debtor's share
+    //       shares[j].share -= amount; // Update the creditor's share
+    //     }
+    //   }
+    // }
   } catch (error) {
-    console.error('Error fetching trip data:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching trip data:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
- // status = active, creator = email and invitaion contains email
-  //console.log(input);
-  // save in DB
-  //res.json({ trip: {} });
-  // res.json({ success: true, message: "Trip details" });
+// status = active, creator = email and invitaion contains email
+//console.log(input);
+// save in DB
+//res.json({ trip: {} });
+// res.json({ success: true, message: "Trip details" });
 module.exports = router;
