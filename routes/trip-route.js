@@ -92,7 +92,7 @@ router.post("/create", function (req, res, next) {
   const creator = inputTrip.creator;
   const status = "ACTIVE";
 
-  const query = `INSERT INTO trip (name, creator) VALUES ('${tripname}', '${creator}');`;
+  const query = `SELECT * FROM trip INSERT IGNORE INTO trip (name, creator) VALUES ('${tripname}', '${creator}');`;
 
   connection.query(query, (error, result) => {
     if (error) {
@@ -259,6 +259,26 @@ router.post("/details/:trip_id", (req, res, next) => {
   );
 });
 
+router.post("/settledTripDetails/:trip_id", (req, res, next) => {
+  const tripId = req.params.trip_id;
+  // from DB find this
+  const settledtripexpenses = [];
+  connection.query(
+    "SELECT * FROM expense WHERE trip_id=?",
+    [tripId],
+    (error, data) => {
+      if (error) {
+        console.log(error);
+        res.sendStatus(500);
+      } else {
+        data.forEach((d) => settledtripexpenses.push(d));
+        console.log(settledtripexpenses);
+        res.send(settledtripexpenses);
+      }
+    }
+  );
+});
+
 router.post("/settlement/:trip_id", async (req, res) => {
   const tripId = req.params.trip_id;
 
@@ -313,11 +333,13 @@ router.post("/settlement/:trip_id", async (req, res) => {
               to: "",
               amount: 123,
             });
+            
             // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
             // loop Givers[] - loop on Receivers[]
             // compare giver[0] receiveer[0]
-            // giver amout =
+            // giver amout = givertemp
             // giver[0] > receiveer[0]   >>   give complete amount to receiver[0]
+            //givertemp = giver - reciever
 
             res.json(tripInfo);
           }

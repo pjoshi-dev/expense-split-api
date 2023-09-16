@@ -231,6 +231,24 @@
       showSettledTripsDetails();
     }
 
+    function viewSettledTripDetails(trip_id, name, creator){
+      showSettledTripDetails(trip_id, name, creator);
+    }
+
+    const showSettledTripDetails = async (trip_id, name, creator)=>{
+      const url = `http://localhost:4000/trip/settled/${trip_id}`;
+      const options = {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({tripid: trip_id})
+      }
+      let result = await fetch(url, options);
+      localStorage.setItem("selectedTrip", JSON.stringify({trip_id, name, creator}))
+      window.location.href = 'settled.html';
+    }
+
     const showSettledTripsDetails = async () => {
       const url = 'http://localhost:4000/trip/settled';
       const options = {
@@ -257,7 +275,7 @@
           cell1.innerHTML = trip.name;
           cell2.innerHTML = trip.creator;
           cell3.innerHTML = trip.status;
-          cell4.innerHTML = `<button onClick="viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
+          cell4.innerHTML = `<button class="btn btn-outline-secondary" onClick="viewSettledTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator}')">View</button>`;
 
         })
       }
