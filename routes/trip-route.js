@@ -312,9 +312,73 @@ router.post("/settlement/:trip_id", async (req, res) => {
               const paid_by = person.paid_by;
               const totalExpenses = person.totalExpenses;
               const share = totalExpenses - perHead;
-              shares.push({ paid_by, share });
+              shares.push({ paid_by, share, balance: share });
             });
             console.log("shares --------- ", shares);
+
+            const settlement = [];
+
+            const givers = shares
+              .filter((person) => person.share < 0)
+              .sort((a, b) => a.share - b.share);
+            const receivers = shares
+              .filter((person) => person.share > 0)
+              .sort((a, b) => a.share - b.share)
+              .reverse();
+            console.log(givers);
+            console.log(receivers);
+
+            givers.forEach((giver, index) => {
+              if (giver.balance !== 0) {
+                receivers.forEach((receiver, rindex) => {
+                  if (receiver.balance !== 0) {
+                    if (
+                      Math.abs(giver.balance) === Math.abs(receiver.balance)
+                    ) {
+                      settlement.push({
+                        from: giver.paid_by,
+                        to: receiver.paid_by,
+                        amount: Math.abs(giver.balance),
+                      });
+                      giver.balance = 0;
+                      receiver.balance = 0;
+                    } else if (
+                      Math.abs(giver.balance) > Math.abs(receiver.balance)
+                    ) {
+                      // Giver is more
+                      settlement.push({
+                        from: giver.paid_by,
+                        to: receiver.paid_by,
+                        amount: Math.abs(receiver.balance),
+                      });
+                      giver.balance = -(
+                        Math.abs(giver.balance) - receiver.balance
+                      );
+                      receiver.balance = 0;
+                    } else if (
+                      Math.abs(giver.balance) < Math.abs(receiver.balance)
+                    ) {
+                      // Giver is more
+                      settlement.push({
+                        from: giver.paid_by,
+                        to: receiver.paid_by,
+                        amount: Math.abs(giver.balance),
+                      });
+                      giver.balance = 0;
+                      receiver.balance =
+                        receiver.balance - Math.abs(giver.balance);
+                    }
+                  }
+                });
+              }
+            });
+
+            // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
+            // loop Givers[] - loop on Receivers[]
+            // compare giver[0] receiveer[0]
+            // giver amout = givertemp
+            // giver[0] > receiveer[0]   >>   give complete amount to receiver[0]
+            // givertemp = giver - reciever
 
             // Construct the response JSON
             const tripInfo = {
@@ -323,24 +387,9 @@ router.post("/settlement/:trip_id", async (req, res) => {
               total_trip_expense: totalTripExpense,
               perHead: perHead,
               individual_shares: shares,
-              // transactions: transactions,
+              settlement,
             };
             console.log("tripInfo --------- ", tripInfo);
-
-            const settlement = [];
-            settlement.push({
-              from: "",
-              to: "",
-              amount: 123,
-            });
-            
-            // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
-            // loop Givers[] - loop on Receivers[]
-            // compare giver[0] receiveer[0]
-            // giver amout = givertemp
-            // giver[0] > receiveer[0]   >>   give complete amount to receiver[0]
-            //givertemp = giver - reciever
-
             res.json(tripInfo);
           }
         );

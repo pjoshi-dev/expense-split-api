@@ -302,13 +302,7 @@
         <br />
 
         <div class="trip_expense">
-          <table
-            id="display_trip_expense"
-            width="100%"
-            cellpadding="1"
-            cellspacing="0"
-            border="1"
-          >
+          <table id="display_trip_expense" border="1">
             <thead>
               <tr align="center">
                 <td class="lbl">Expense Description</td>
@@ -332,6 +326,27 @@
               Settle Trip
             </button>
           </center>
+        </div>
+
+        <br />
+
+        <div class="trip_expense_settlement">
+          <table
+            id="table_trip_expense_settlement"
+            border="1"
+            style="width: 100%"
+          >
+            <thead>
+              <tr style="border-bottom: 1px solid #333333">
+                <th class="lbl" style="width: 35%">From</th>
+                <th class="lbl" style="width: 35%">To</th>
+                <th class="lbl" style="width: 30%; align: right">
+                  Amount to pay
+                </th>
+              </tr>
+            </thead>
+            <tbody id="display_trip_expense_settlement"></tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -440,7 +455,33 @@
         },
         body: JSON.stringify(payload), // body data type must match "Content-Type" header
       };
-      let result = await fetch(url, options);
+      let result = await fetch(url, options).then((res) => {
+        return res.json();
+      });
+
+      console.log(result);
+
+      if (result.settlement.length > 0) {
+        var table = document.getElementById("table_trip_expense_settlement");
+
+        result.settlement.forEach((settelement, index) => {
+          var row = table.insertRow(index + 1);
+          var cell1 = row.insertCell(0);
+          cell1.style.borderBottom = "0.5px solid #d0d0d0";
+          var cell2 = row.insertCell(1);
+          cell2.style.borderBottom = "0.5px solid #d0d0d0";
+          var cell3 = row.insertCell(2);
+          cell3.style.borderBottom = "0.5px solid #d0d0d0";
+
+          //viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator})')'
+          cell1.innerHTML =
+            "<span style='float: left;''>" + settelement.from + "</span>";
+          cell2.innerHTML =
+            "<span style='float: left;''>" + settelement.to + "</span>";
+          cell3.innerHTML =
+            "<span style='float: right;''>" + settelement.amount + "</span>";
+        });
+      }
     };
   </script>
 </html>
