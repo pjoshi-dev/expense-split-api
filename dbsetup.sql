@@ -35,3 +35,18 @@ creator + utm
 SELECT * FROM trip WHERE status = 'ACTIVE' AND creator='sarthak@gmail.com' AND SELECT * FROM user_trip_mapping WHERE email_id='sarthak@gmail.com' AND status='ACTIVE'
 
 SELECT trip.*, user_trip_mapping.* FROM trip INNER JOIN user_trip_mapping ON trip.creator = user_trip_mapping.email_id WHERE trip.status = 'ACTIVE' AND user_trip_mapping.email_id = 'john@gmail.com';
+
+trip_id: tripId,
+              total_users: numberOfUsers,
+              total_trip_expense: totalTripExpense,
+              perHead: perHead,
+              individual_shares: shares,
+              // transactions: transactions,
+
+CREATE TABLE settlementDetails ( settlement_trip_id int NOT NULL AUTO_INCREMENT, trip_id int NOT NULL, total_users int NOT NULL, total_trip_expense int NOT NULL,perHead int NOT NULL,individual_shares int NOT NULL,PRIMARY KEY (settlement_trip_id));
+
+CREATE TABLE settlementPayment ( settlement_trip_id int NOT NULL, from_user int NOT NULL, to_user int NOT NULL, payable_amount int NOT NULL, FOREIGN KEY(settlement_trip_id) REFERENCES settlementDetails(settlement_trip_id));
+
+INSERT INTO settlementDetails (trip_id,total_users,total_trip_expense,perHead,individual_shares)  VALUES(tripId,numberOfUsers,totalTripExpense,perHead,shares)
+
+UPDATE trip SET status = "SETTLED" WHERE trip_id = tripId;

@@ -302,7 +302,7 @@
         <br />
 
         <div class="trip_expense">
-          <table id="display_trip_expense" border="1">
+          <table id="display_trip_expense" border="1" style="width: 100%;">
             <thead>
               <tr align="center">
                 <td class="lbl">Expense Description</td>
@@ -340,7 +340,7 @@
               <tr style="border-bottom: 1px solid #333333">
                 <th class="lbl" style="width: 35%">From</th>
                 <th class="lbl" style="width: 35%">To</th>
-                <th class="lbl" style="width: 30%; align: right">
+                <th class="lbl" style="width: 30%; text-align: right">
                   Amount to pay
                 </th>
               </tr>
@@ -348,6 +348,7 @@
             <tbody id="display_trip_expense_settlement"></tbody>
           </table>
         </div>
+
       </div>
     </div>
   </body>
@@ -480,6 +481,7 @@
             "<span style='float: left;''>" + settelement.to + "</span>";
           cell3.innerHTML =
             "<span style='float: right;''>" + settelement.amount + "</span>";
+         
         });
       }
     };

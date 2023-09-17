@@ -373,6 +373,13 @@ router.post("/settlement/:trip_id", async (req, res) => {
               }
             });
 
+            //const query = `INSERT INTO settlementDetails (trip_id,total_users,total_trip_expense,perHead,individual_shares)  VALUES (${tripId},${numberOfUsers},${totalTripExpense},${perHead},${shares})`;
+            //UPDATE trip SET status = "SETTLED" WHERE trip_id = tripId;
+            
+
+          
+
+            
             // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
             // loop Givers[] - loop on Receivers[]
             // compare giver[0] receiveer[0]
@@ -389,8 +396,13 @@ router.post("/settlement/:trip_id", async (req, res) => {
               individual_shares: shares,
               settlement,
             };
+
+            
             console.log("tripInfo --------- ", tripInfo);
             res.json(tripInfo);
+            
+           
+
           }
         );
       }
