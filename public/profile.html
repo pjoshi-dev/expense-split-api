@@ -151,7 +151,14 @@
           body: JSON.stringify(payload), // body data type must match "Content-Type" header
         };
         let result = await fetch(url, options);
-        alert("Trip Created Successfully!");
+
+        if(result.status==200){
+          alert("Trip Created Successfully!");
+        }
+        else{
+          alert("Name already exists")
+        }
+        
     }
 
     // function addTrip(){

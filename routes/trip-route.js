@@ -92,7 +92,7 @@ router.post("/create", function (req, res, next) {
   const creator = inputTrip.creator;
   const status = "ACTIVE";
 
-  const query = `SELECT * FROM trip INSERT IGNORE INTO trip (name, creator) VALUES ('${tripname}', '${creator}');`;
+  const query = `INSERT INTO trip (name, creator) VALUES ('${tripname}', '${creator}');`;
 
   connection.query(query, (error, result) => {
     if (error) {
