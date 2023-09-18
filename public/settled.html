@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -25,9 +25,26 @@
     ></script>
     <link rel="stylesheet" href="css/details.css" />
     <title>Settled Trip</title>
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
 
+      td,
+      th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+    </style>
     <script>
-        function showSettledTripDetails() {
+      function showSettledTripDetails() {
         let selectedTrip;
         const selectedTripString = localStorage.getItem("selectedTrip");
         if (selectedTripString) {
@@ -65,10 +82,10 @@
 
         console.log(result);
 
-        if (result.length > 0) {
+        if (result.settledtripexpenses.length > 0) {
           var table = document.getElementById("display_settledtrip_details");
 
-          result.forEach((selectedTrip, index) => {
+          result.settledtripexpenses.forEach((selectedTrip, index) => {
             var row = table.insertRow(index + 1);
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
@@ -89,80 +106,154 @@
               "</span>";
           });
         }
+
+        if (result.tripInfo.settlement.length > 0) {
+          var table1 = document.getElementById("table_trip_expense_settlement");
+
+          result.tripInfo.settlement.forEach((settelement, index) => {
+            var row = table1.insertRow(index + 1);
+            var cell1 = row.insertCell(0);
+            cell1.style.borderBottom = "0.5px solid #d0d0d0";
+            var cell2 = row.insertCell(1);
+            cell2.style.borderBottom = "0.5px solid #d0d0d0";
+            var cell3 = row.insertCell(2);
+            cell3.style.borderBottom = "0.5px solid #d0d0d0";
+
+            //viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator})')'
+            cell1.innerHTML =
+              "<span style='float: left;''>" + settelement.from + "</span>";
+            cell2.innerHTML =
+              "<span style='float: left;''>" + settelement.to + "</span>";
+            cell3.innerHTML =
+              "<span style='float: right;''>" + settelement.amount + "</span>";
+          });
+
+          document.getElementById("trip_name").innerHTML =
+            result.tripInfo.trip_id;
+          document.getElementById("perHead").innerHTML =
+            result.tripInfo.perHead;
+          document.getElementById("total_trip_expense").innerHTML =
+            result.tripInfo.total_trip_expense;
+          document.getElementById("total_users").innerHTML =
+            result.tripInfo.total_users;
+        }
       };
     </script>
-</head>
-<body onload="showSettledTripDetails()">
-<div class="demo">
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-      <div class="container-fluid">
-        <div class="logo-img">
-          <a class="navbar-brand fw-bold" href="#">ExpenseSplit</a>
+  </head>
+  <body onload="showSettledTripDetails()">
+    <div class="demo">
+      <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container-fluid">
+          <div class="logo-img">
+            <a class="navbar-brand fw-bold" href="#">ExpenseSplit</a>
+          </div>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            style="color: white"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  onclick="window.location.href='profile.html'"
+                  style="font-size: 15px"
+                >
+                  Profile
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          style="color: white"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+      </nav>
+
+      <div class="container">
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+          "
         >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                onclick="window.location.href='profile.html'"
-                style="font-size: 15px"
-              >
-                Profile
-              </button>
-            </li>
-          </ul>
+          <span id="name"></span>
+          <span id="creator"></span>
         </div>
-      </div>
-    </nav>
-
-    <div class="container">
-
-    <div
-        style="
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        margin-top: 10px;
-        ">
-        <span id="name"></span>
-        <span id="creator"></span>
-    </div>
-    <br><br>
-    <div class="trip_expense">
-        <h3 style="text-align:center">Settled Trip Summary</h3><br>
-        <table
-          id="display_settledtrip_details"
-          width="100%"
-          cellpadding="1"
-          cellspacing="0"
-          border="1"
-        >
-          <tbody>
+        <br /><br />
+        <div class="trip_expense">
+          <h3 style="text-align: center">Settled Trip Summary</h3>
+          <br />
+          <table>
             <tr>
-              <td class="lbl">Trip Name</td>
-              <td class="lbl">Total Expense</td>
-              <td class="lbl">Expense Per Head</td>
-              <td class="lbl">Who Owed Whom</td>
+              <th>Trip name</th>
+              <th id="trip_name"></th>
             </tr>
-          </tbody>
-          <!-- <tbody id="displaytable2"></tbody> -->
-        </table>
-      </div>
+            <tr>
+              <th>Total members</th>
+              <th id="total_users"></th>
+            </tr>
+            <tr>
+              <th>Trip Expense</th>
+              <th id="total_trip_expense"></th>
+            </tr>
+            <tr>
+              <th>Per head Expense</th>
+              <th id="perHead"></th>
+            </tr>
+          </table>
 
-  </div>
-</div>
-</body>
+          <hr />
+          <h6 style="text-align: center">Trip Expenditure</h6>
+          <br />
+          <table
+            id="display_settledtrip_details"
+            width="100%"
+            cellpadding="1"
+            cellspacing="0"
+            border="1"
+          >
+            <tbody>
+              <tr>
+                <td class="lbl">Description</td>
+                <td class="lbl">Expense</td>
+                <td class="lbl">Expense by</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <br />
+          <hr />
+          <h6 style="text-align: center">Trip Settlement</h6>
+          <br />
+          <table
+            id="table_trip_expense_settlement"
+            width="100%"
+            cellpadding="1"
+            cellspacing="0"
+            border="1"
+          >
+            <thead>
+              <tr style="border-bottom: 1px solid #333333">
+                <th class="lbl" style="width: 35%">From</th>
+                <th class="lbl" style="width: 35%">To</th>
+                <th class="lbl" style="width: 30%; text-align: right">
+                  Amount to pay
+                </th>
+              </tr>
+            </thead>
+            <tbody id="display_trip_expense_settlement"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

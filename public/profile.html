@@ -86,7 +86,7 @@
             <br><br>
             
             <div class="trip_data">
-              <table id="displaytable_active"  width="100%" cellpadding="1" cellspacing="0" border="1">
+              <table id="displaytable_active"  width="100%" cellpadding="1" cellspacing="0" border="1" style="display: none;" >
                 <thead>
                   <tr align="center">
                     <td class="lbl">Trip Name</td>
@@ -100,13 +100,14 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- <div class="trip_data">
-              <table id="displaytable_settled"  width="100%" cellpadding="1" cellspacing="0" border="1">
+            
+            <div class="trip_data">
+              <table id="displaytable_settled"  width="100%" cellpadding="1" cellspacing="0" border="1" style="display: none;">
                 <thead>
                   <tr align="center">
                     <td class="lbl">Trip Name</td>
                     <td class="lbl">Created By</td>
+                    <td class="lbl">Status</td>
                     <td class="lbl">Action</td>
                   </tr>
                 </thead>
@@ -114,7 +115,7 @@
 
                 </tbody>
               </table>
-            </div> -->
+            </div>
            
 
     </div>
@@ -214,8 +215,11 @@
         return response.json()
       });
       console.log(result);
-      if(result.length > 0) {
         var table = document.getElementById("displaytable_active");
+        table.style.display = "block"
+        table.style.width = "100%"
+        document.getElementById("displaytable_settled").style.display = "none"
+      if(result.length > 0) {
 
         result.forEach((trip, index) => {
           var row = table.insertRow(index + 1);
@@ -223,6 +227,10 @@
           var cell2 = row.insertCell(1);
           var cell3 = row.insertCell(2);
           var cell4 = row.insertCell(3);
+          cell1.style.width = "25%"
+          cell2.style.width = "25%"
+          cell3.style.width = "25%"
+          cell4.style.width = "25%"
           
           //viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator})')'
           cell1.innerHTML = trip.name;
@@ -269,8 +277,11 @@
         return response.json()
       });
       console.log(result);
+        var table = document.getElementById("displaytable_settled");
+        table.style.display = "block"
+        table.style.width = "100%"
+        document.getElementById("displaytable_active").style.display = "none"
       if(result.length > 0) {
-        var table = document.getElementById("displaytable_active");
 
         result.forEach((trip, index) => {
           var row = table.insertRow(index + 1);
@@ -278,6 +289,10 @@
           var cell2 = row.insertCell(1);
           var cell3 = row.insertCell(2);
           var cell4 = row.insertCell(3);
+          cell1.style.width = "25%"
+          cell2.style.width = "25%"
+          cell3.style.width = "25%"
+          cell4.style.width = "25%"
 
           cell1.innerHTML = trip.name;
           cell2.innerHTML = trip.creator;

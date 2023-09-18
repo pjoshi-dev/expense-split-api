@@ -44,9 +44,9 @@ router.post("/signup", function (req, res, next) {
     if (error) {
       console.log(error);
       res.status(500).send(error);
-      res.json("error", {
-        message: "User registration failed. Please try again.",
-      });
+      // res.json("error", {
+      //   message: "User registration failed. Please try again.",
+      // });
       // return;
     } else {
       console.log(result);
@@ -266,14 +266,133 @@ router.post("/settledTripDetails/:trip_id", (req, res, next) => {
   connection.query(
     "SELECT * FROM expense WHERE trip_id=?",
     [tripId],
-    (error, data) => {
+    async (error, data) => {
       if (error) {
         console.log(error);
         res.sendStatus(500);
       } else {
         data.forEach((d) => settledtripexpenses.push(d));
-        console.log(settledtripexpenses);
-        res.send(settledtripexpenses);
+
+        // Settlement
+
+        let totalTripExpense = 0;
+        await connection.query(
+          "SELECT SUM(expense_amount) as totalTripExpense FROM expense WHERE trip_id = ?",
+          [tripId],
+          async (error, expense) => {
+            totalTripExpense = expense[0].totalTripExpense;
+            console.log("totalTripExpense --------- ", totalTripExpense);
+
+            // Per user
+
+            // Get all users and their total expenses for the given trip_id
+            const shares = [];
+            let numberOfUsers = 1;
+            await connection.query(
+              "SELECT paid_by, SUM(expense_amount) as totalExpenses FROM expense WHERE trip_id = ? GROUP BY paid_by",
+              [tripId],
+              async (error, userRows) => {
+                // Calculate individual shares for each user
+                numberOfUsers = userRows.length;
+                console.log("numberOfUsers --------- ", numberOfUsers);
+
+                // per head
+                const perHead = totalTripExpense / numberOfUsers;
+                console.log("perHead --------- ", perHead);
+
+                userRows.forEach((person) => {
+                  const paid_by = person.paid_by;
+                  const totalExpenses = person.totalExpenses;
+                  const share = totalExpenses - perHead;
+                  shares.push({ paid_by, share, balance: share });
+                });
+                console.log("shares --------- ", shares);
+
+                const settlement = [];
+
+                const givers = shares
+                  .filter((person) => person.share < 0)
+                  .sort((a, b) => a.share - b.share);
+                const receivers = shares
+                  .filter((person) => person.share > 0)
+                  .sort((a, b) => a.share - b.share)
+                  .reverse();
+                console.log(givers);
+                console.log(receivers);
+
+                givers.forEach((giver, index) => {
+                  if (giver.balance !== 0) {
+                    receivers.forEach((receiver, rindex) => {
+                      if (receiver.balance !== 0) {
+                        if (
+                          Math.abs(giver.balance) === Math.abs(receiver.balance)
+                        ) {
+                          settlement.push({
+                            from: giver.paid_by,
+                            to: receiver.paid_by,
+                            amount: Math.abs(giver.balance),
+                          });
+                          giver.balance = 0;
+                          receiver.balance = 0;
+                        } else if (
+                          Math.abs(giver.balance) > Math.abs(receiver.balance)
+                        ) {
+                          // Giver is more
+                          settlement.push({
+                            from: giver.paid_by,
+                            to: receiver.paid_by,
+                            amount: Math.abs(receiver.balance),
+                          });
+                          giver.balance = -(
+                            Math.abs(giver.balance) - receiver.balance
+                          );
+                          receiver.balance = 0;
+                        } else if (
+                          Math.abs(giver.balance) < Math.abs(receiver.balance)
+                        ) {
+                          // Giver is more
+                          settlement.push({
+                            from: giver.paid_by,
+                            to: receiver.paid_by,
+                            amount: Math.abs(giver.balance),
+                          });
+                          giver.balance = 0;
+                          receiver.balance =
+                            receiver.balance - Math.abs(giver.balance);
+                        }
+                      }
+                    });
+                  }
+                });
+
+                //const query = `INSERT INTO settlementDetails (trip_id,total_users,total_trip_expense,perHead,individual_shares)  VALUES (${tripId},${numberOfUsers},${totalTripExpense},${perHead},${shares})`;
+                //UPDATE trip SET status = "SETTLED" WHERE trip_id = tripId;
+
+                // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
+                // loop Givers[] - loop on Receivers[]
+                // compare giver[0] receiveer[0]
+                // giver amout = givertemp
+                // giver[0] > receiveer[0]   >>   give complete amount to receiver[0]
+                // givertemp = giver - reciever
+
+                // Construct the response JSON
+                const tripInfo = {
+                  trip_id: tripId,
+                  total_users: numberOfUsers,
+                  total_trip_expense: totalTripExpense,
+                  perHead: perHead,
+                  individual_shares: shares,
+                  settlement,
+                };
+                const response = {
+                  settledtripexpenses,
+                  tripInfo,
+                };
+                res.send(response);
+              }
+            );
+          }
+        );
       }
     }
   );
@@ -299,7 +418,7 @@ router.post("/settlement/:trip_id", async (req, res) => {
         await connection.query(
           "SELECT paid_by, SUM(expense_amount) as totalExpenses FROM expense WHERE trip_id = ? GROUP BY paid_by",
           [tripId],
-          (error, userRows) => {
+          async (error, userRows) => {
             // Calculate individual shares for each user
             numberOfUsers = userRows.length;
             console.log("numberOfUsers --------- ", numberOfUsers);
@@ -375,11 +494,7 @@ router.post("/settlement/:trip_id", async (req, res) => {
 
             //const query = `INSERT INTO settlementDetails (trip_id,total_users,total_trip_expense,perHead,individual_shares)  VALUES (${tripId},${numberOfUsers},${totalTripExpense},${perHead},${shares})`;
             //UPDATE trip SET status = "SETTLED" WHERE trip_id = tripId;
-            
 
-          
-
-            
             // from shares.... create 2 buckets - Receivers[] and Givers[] - descending order - max on top
             // loop Givers[] - loop on Receivers[]
             // compare giver[0] receiveer[0]
@@ -397,12 +512,14 @@ router.post("/settlement/:trip_id", async (req, res) => {
               settlement,
             };
 
-            
-            console.log("tripInfo --------- ", tripInfo);
-            res.json(tripInfo);
-            
-           
-
+            await connection.query(
+              `UPDATE trip SET status = 'SETTLED' WHERE trip_id = ?;`,
+              [tripId],
+              (error, userRows) => {
+                console.log("tripInfo --------- ", tripInfo);
+                res.json(tripInfo);
+              }
+            );
           }
         );
       }
