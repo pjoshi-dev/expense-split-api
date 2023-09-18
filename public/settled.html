@@ -3,9 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
@@ -55,9 +52,6 @@
           document.getElementById("creator").innerHTML = selectedTrip.creator;
           showSettledTripSummary(selectedTrip);
         }
-        // prepoulate
-        // const loggedInUser = localStorage.getItem("emailid");
-        // document.getElementById("paid_by").value = loggedInUser;
       }
 
       const showSettledTripSummary = async (selectedTrip) => {
@@ -91,7 +85,6 @@
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
 
-            //viewTripDetails(${trip.trip_id}, '${trip.name}', '${trip.creator})')'
             cell1.innerHTML =
               "<span style='float: left;''>" +
               selectedTrip.expense_description +
@@ -128,8 +121,8 @@
               "<span style='float: right;''>" + settelement.amount + "</span>";
           });
 
-          document.getElementById("trip_name").innerHTML =
-            result.tripInfo.trip_id;
+          // document.getElementById("trip_name").innerHTML =
+          //   result.tripInfo.trip_id;
           document.getElementById("perHead").innerHTML =
             result.tripInfo.perHead;
           document.getElementById("total_trip_expense").innerHTML =
@@ -193,10 +186,6 @@
           <h3 style="text-align: center">Settled Trip Summary</h3>
           <br />
           <table>
-            <tr>
-              <th>Trip name</th>
-              <th id="trip_name"></th>
-            </tr>
             <tr>
               <th>Total members</th>
               <th id="total_users"></th>

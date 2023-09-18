@@ -37,12 +37,6 @@
               <li class="nav-item">
                 <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='login.html'">Log In</button>
               </li>
-              <!--<li class="nav-item">
-                <a class="nav-link" href="#">SERVICES</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">CONTACT</a>
-              </li>-->
             </ul>
           </div>
         </div>
@@ -76,12 +70,6 @@
                     <input type="password" class="form-control" id="user_password" name="user_password" placeholder="Enter Password" onkeyup="validatePassword()">   
                     <span id="password-error"></span>
                 </div>
-
-                <!-- <div class="text-center">
-                    <button type="submit" onclick="saveData()" class="btn btn-primary" id="save_btn"></button>
-                    <span id="submit-error"></span>
-                    <input type="reset"  class="btn btn-warning" id="reset_btn"></input>
-                </div> -->
 
                 <div class="text-center">
                     <input type="button" onclick="saveData() " class="btn btn-primary" id="save_btn" value="Submit"></input>
@@ -165,7 +153,6 @@
             passwordError.innerHTML = 'Password is Required' ;
             return false;
         }
-        //^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$
         if(!userpassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/))
         {
             passwordError.innerHTML = 'Must contain min 8 characters, 1 digit,1 special character, 1 uppercase and 1 lowercase alphabet' ;
@@ -189,36 +176,6 @@
         
         sigunpSubmitForm();
 
-        // let name, phone, email, password;
-        // name = document.getElementById("full_name").value;
-        // phone = document.getElementById("phone_number").value;
-        // email = document.getElementById("email_id").value;
-        // password = document.getElementById("user_password").value;
-        
-        // // localStorage.setItem("name",name);
-        // // localStorage.setItem("phone",phone);
-        // // localStorage.setItem("email",email);
-        // // localStorage.setItem("password",password);
-
-        // let user_record = new Array();
-        // user_record = JSON.parse(localStorage.getItem("users"))?JSON.parse(localStorage.getItem("users")):[]
-        // if(user_record.some((v)=>{
-        //     return v.email == email
-        // })){
-        //     alert("duplicate data")
-        // }
-        // else{
-        //     user_record.push({
-        //         "name":name,
-        //         "phone": phone,
-        //         "email":email,
-        //         "password":password
-        //     })   
-        //     localStorage.setItem("users",JSON.stringify(user_record));
-        //     window.location.href="login.html";
-        // }
-
-       
     }
 
     const sigunpSubmitForm = async () => {

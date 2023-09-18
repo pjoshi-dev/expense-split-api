@@ -32,12 +32,6 @@
               <li class="nav-item">
                 <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='signup.html'">Sign Up</button>
               </li>
-              <!--<li class="nav-item">
-                <a class="nav-link" href="#">SERVICES</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">CONTACT</a>
-              </li>-->
             </ul>
           </div>
         </div>
@@ -103,7 +97,6 @@ function validatePassword(){
 		passwordError.innerHTML = 'Password is Required' ;
 		return false;
 	}
-	//^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%^&(){}[]:;<>,.?/~_+-=|\]).{8,32}$
 	if(!userpassword.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/))
 	{
 		passwordError.innerHTML = 'Must contain min 8 characters, 1 digit,1 special character, 1 uppercase and 1 lowercase alphabet' ;
@@ -128,25 +121,6 @@ function saveData(){
     localStorage.setItem("emailid",email);
 
         loginSubmitForm();
-   
-    // let user_record = new Array();
-    // user_record = JSON.parse(localStorage.getItem("users"))?JSON.parse(localStorage.getItem("users")):[]
-    // if(user_record.some((v)=>{
-    //     return v.email==email && v.password==password
-    // })){
-    //     alert("Login Successful")
-    //     let current_user = user_record.filter((v)=>{
-    //         return v.email==email && v.password==password
-    //     })[0]
-
-    //     localStorage.setItem("name",current_user.name);
-    //     localStorage.setItem("email",current_user.email);
-    //     window.location.href="profile.html";
-    // }
-    // else{
-    //     alert("Login Failed")
-    // }
-    
 }
 
 const loginSubmitForm = async () => {
