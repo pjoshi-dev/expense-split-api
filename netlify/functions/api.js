@@ -4,10 +4,10 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 import serverless from "serverless-http";
 
-const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
-const tripRouter = require("./routes/trip-route");
-const esRouter = require("./routes/expense-split-route");
+const indexRouter = require("./../../routes/index");
+const usersRouter = require("./../../routes/users");
+const tripRouter = require("./../../routes/trip-route");
+const esRouter = require("./../../routes/expense-split-route");
 
 const api = express();
 api.use(cors());
