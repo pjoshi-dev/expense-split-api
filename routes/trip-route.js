@@ -387,6 +387,7 @@ router.post("/settlement/:trip_id", async (req, res) => {
 
             // per head
             const perHead = totalTripExpense / numberOfUsers;
+            perHead = perHead.toFixed(2);
             console.log("perHead --------- ", perHead);
 
             userRows.forEach((person) => {
