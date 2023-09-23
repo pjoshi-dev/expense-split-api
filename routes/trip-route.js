@@ -4,6 +4,9 @@ const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const { connection } = require("../config/db");
 
+router.get("/ping", (req, res, next) => {
+  res.send("Pong");
+});
 
 router.get("/test-db", (req, resp, next) => {
   try {
@@ -139,7 +142,7 @@ router.post("/active", async (req, res, next) => {
   // -- creator = me, status = active;
   const queryMine = `select * from trip where status = 'ACTIVE' and creator = '${email}'`;
   const queryOther = `select * from user_trip_mapping where email_id = '${email}'`;
- 
+
   const finalMyTrips = [];
   await connection.query(queryMine, async (error, data) => {
     if (error) {
@@ -179,15 +182,15 @@ router.post("/settled", async (req, res, next) => {
 
   const queryMine = `select * from trip where status = 'SETTLED' and creator = '${email}'`;
   const queryOther = `select * from user_trip_mapping where email_id = '${email}'`;
-  
+
   const finalSettledMyTrips = [];
   await connection.query(queryMine, async (error, data) => {
     if (error) {
       console.log(error);
       res.sendStatus(500);
     } else {
-      if(data && data.length>0){
-      data.forEach((d) => finalSettledMyTrips.push(d));
+      if (data && data.length > 0) {
+        data.forEach((d) => finalSettledMyTrips.push(d));
       }
       console.log("------------- my trip details");
       console.log(finalSettledMyTrips);
@@ -199,9 +202,9 @@ router.post("/settled", async (req, res, next) => {
           const otherTripsQuery = `select * from trip where status = 'SETTLED' and trip_id  in (${otherTrips.toString()})`;
           await connection.query(otherTripsQuery, (error, result) => {
             console.log("------------- other my trip details");
-            if(result && result.length>0){
+            if (result && result.length > 0) {
               result.forEach((d) => finalSettledMyTrips.push(d));
-            }    
+            }
             console.log(finalSettledMyTrips);
             res.send(finalSettledMyTrips);
           });
@@ -476,7 +479,6 @@ router.post("/settlement/:trip_id", async (req, res) => {
         );
       }
     );
-
   } catch (error) {
     console.error("Error fetching trip data:", error);
     res.status(500).json({ message: "Internal server error" });
