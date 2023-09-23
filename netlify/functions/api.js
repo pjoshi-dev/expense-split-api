@@ -19,7 +19,7 @@ api.use(cookieParser());
 api.use("/.netlify/functions/api", indexRouter);
 api.use("/.netlify/functions/api/users", usersRouter);
 api.use("/.netlify/functions/api/ex-split", esRouter);
-api.use("/.netlify/functions/api/v1/trip", tripRouter);
+api.use("/.netlify/functions/api/trip", tripRouter);
 
 const router = Router();
 router.get("/hello", (req, res) => res.send("Hello World!"));
