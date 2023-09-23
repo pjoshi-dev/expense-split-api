@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
@@ -49,7 +49,7 @@
           tripId: tripId,
         };
 
-        const url = `http://localhost:4000/trip/details/${tripId}`;
+        const url = `https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/details/${tripId}`;
         const options = {
           method: "POST", // *GET, POST, PUT, DELETE, etc.
           headers: {
@@ -299,7 +299,7 @@
         <br />
 
         <div class="trip_expense">
-          <table id="display_trip_expense" border="1" style="width: 100%;">
+          <table id="display_trip_expense" border="1" style="width: 100%">
             <thead>
               <tr align="center">
                 <td class="lbl">Expense Description</td>
@@ -345,7 +345,6 @@
             <tbody id="display_trip_expense_settlement"></tbody>
           </table>
         </div>
-
       </div>
     </div>
   </body>
@@ -372,7 +371,8 @@
         tripId: tripid,
       };
 
-      const url = "http://localhost:4000/trip/invite";
+      const url =
+        "https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/invite";
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -412,7 +412,8 @@
         tripId: tripId,
       };
 
-      const url = "http://localhost:4000/trip/expense";
+      const url =
+        "https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/expense";
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -445,7 +446,7 @@
         tripId: tripId,
       };
 
-      const url = `http://localhost:4000/trip/settlement/${tripId}`;
+      const url = `https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/settlement/${tripId}`;
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -478,7 +479,6 @@
             "<span style='float: left;''>" + settelement.to + "</span>";
           cell3.innerHTML =
             "<span style='float: right;''>" + settelement.amount + "</span>";
-         
         });
       }
     };
