@@ -138,7 +138,7 @@
         creator: creator
       }
 
-      const url = "http://localhost:4000/trip/create";
+      const url = "https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/create";
         const options = {
           method: "POST", // *GET, POST, PUT, DELETE, etc.
           headers: {
@@ -166,7 +166,7 @@
     }
     
     const showTripDetails = async (trip_id, name, creator)=>{
-      const url = `http://localhost:4000/trip/details/${trip_id}`;
+      const url = `https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/details/${trip_id}`;
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -180,7 +180,7 @@
     }
 
     const showActiveTripsDetails = async () => {
-      const url = 'http://localhost:4000/trip/active';
+      const url = 'https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/active';
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -227,7 +227,7 @@
     }
 
     const showSettledTripDetails = async (trip_id, name, creator)=>{
-      const url = `http://localhost:4000/trip/settled/${trip_id}`;
+      const url = `https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/settled/${trip_id}`;
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
@@ -241,7 +241,7 @@
     }
 
     const showSettledTripsDetails = async () => {
-      const url = 'http://localhost:4000/trip/settled';
+      const url = 'https://stellar-creponne-6d94c6.netlify.app/.netlify/functions/api/trip/settled';
       const options = {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         headers: {
